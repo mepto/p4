@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import pandas as pd
 
 
 class MainView:
@@ -7,6 +8,11 @@ class MainView:
     NEW_TOURNAMENT = {'name': 'Enter tournament name',
                       'location': 'Enter tournament location',
                       'date': 'Enter tournament date (dd/mm/yyyy)'}
+    NEW_PLAYER = {'last_name': "Enter player's last name",
+                  'first_name': "Enter player's first name",
+                  'dob': "Enter player's date of birth (dd/mm/yyyy)",
+                  'gender': "Enter player's gender (M/F/O)",
+                  'ranking': "Enter player's ranking"}
 
     def welcome(self):
         print('''
@@ -22,12 +28,11 @@ class MainView:
         ---------------------
         1 - Create tournament
         2 - Edit tournament
+        3 - View tournament report
         ---------------------
-        3 - Create player
-        4 - Edit player
-        ---------------------
-        5 - View report
-        6 - Export report
+        4 - Create player
+        5 - Edit player
+        6 - View player report
         ''')
 
     def exit(self):
@@ -39,7 +44,6 @@ class MainView:
         :return: user choice
         """
         user_choice = input(message)
-
         while not user_choice or not user_choice.isdigit() or\
                 int(user_choice) not in choice_list:
             reason = None
@@ -56,3 +60,8 @@ class MainView:
 
     def get_user_input(self, message):
         return input(f'{message}: ')
+
+    def report(self, doc_list: list):
+        all_items = [dict(doc) for doc in doc_list]
+        df = pd.DataFrame(all_items)
+        print(df.to_string(index=False))

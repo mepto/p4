@@ -2,10 +2,11 @@
 from datetime import date
 
 from models.db import Database
+from models.player import Player
 
 
 class Tournament:
-    """Create a tournament"""
+    """Manage a tournament"""
 
     def __init__(self):
         # turn: a list of matches
@@ -26,15 +27,22 @@ class Tournament:
         self.location = None
         self.date = None
 
-    def create_tournament(self, tournament):
+    def create_tournament(self, tournament: dict):
         self._db.create('tournament', {
+            # TODO: get last id in table + 1
             'id': len(self._db.tournament_table) + 1,
             'name': tournament['name'],
             'location': tournament['location'],
             'date': tournament['date']})
 
+    def create_player(self, player: dict):
+        Player(player).create()
+
+    def get_tournaments(self):
+        return self._db.read('tournament')
+
     def get_players(self):
-        ...
+        return Player().get_players()
 
     def save_new_entry(self, name, location, t_date, **kwargs):
         current_items = {name: name, location: location, date: t_date}

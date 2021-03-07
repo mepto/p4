@@ -23,15 +23,14 @@ class Database:
 
         return TinyDB(db_file_name)
 
-    def create(self, table, item: dict):
+    def create(self, table: str, item: dict):
         table_to_update = self.get_table(table)
         table_to_update.insert(item)
 
     def read(self, table, **kwargs):
-        for item in self.get_table(table):
-            print(item)
+        return [item for item in self.get_table(table)]
 
-    def update(self, table, id, **kwargs):
+    def update(self, table: str, id: int, **kwargs):
         table_to_update = self.get_table(table)
         table_to_update.update(kwargs)
 

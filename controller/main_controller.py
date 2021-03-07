@@ -17,7 +17,7 @@ class MainController:
         self._view.welcome()
         self._view.main_menu()
         main_choice = self._view.get_user_choice(self._view.DEFAULT_MSG,
-                                                 [*range(0, 6)])
+                                                 [*range(0, 7)])
         self.main_menu_choice(main_choice)
 
     def main_menu_choice(self, choice):
@@ -31,17 +31,19 @@ class MainController:
             # tournament edition
             ...
         elif choice == 3:
-            # player creation
+            # tournament print report
+            self.tournament_report()
             ...
         elif choice == 4:
-            # player edition
+            # player creation
+            self.add_player()
             ...
         elif choice == 5:
-            # reporting in view
+            # player edition
             ...
         elif choice == 6:
-            # reporting file export
-            ...
+            # player print report
+            self.players_report()
 
     def add_tournament(self):
         tournament = {}
@@ -51,3 +53,18 @@ class MainController:
         if not tournament['date']:
             tournament['date'] = date.today().strftime('%d/%m/%Y')
         self._model.create_tournament(tournament)
+
+    def add_player(self):
+        player = {}
+        for item in self._view.NEW_PLAYER:
+            player[item] = self._view.get_user_input(
+                self._view.NEW_PLAYER[item])
+        if not player['ranking']:
+            player['ranking'] = 9999
+        self._model.create_player(player)
+
+    def players_report(self):
+        self._view.report(self._model.get_players())
+
+    def tournament_report(self):
+        self._view.report(self._model.get_tournaments())
