@@ -7,12 +7,15 @@ class MainView:
     DEFAULT_MSG = 'Please make your selection: '
     NEW_TOURNAMENT = {'name': 'Enter tournament name',
                       'location': 'Enter tournament location',
-                      'date': 'Enter tournament date (dd/mm/yyyy)'}
+                      'date': 'Enter tournament date (dd/mm/yyyy)',
+                      'time_control': 'Enter time control type (bullet, '
+                                      'blitz, speed)'}
     NEW_PLAYER = {'last_name': "Enter player's last name",
                   'first_name': "Enter player's first name",
                   'dob': "Enter player's date of birth (dd/mm/yyyy)",
                   'gender': "Enter player's gender (M/F/O)",
                   'ranking': "Enter player's ranking"}
+    SELECT_PLAYER = 'Select player from players list'
 
     def welcome(self):
         print('''
@@ -61,7 +64,11 @@ class MainView:
     def get_user_input(self, message):
         return input(f'{message}: ')
 
-    def report(self, doc_list: list):
+    def show_items(self, doc_list: list):
         all_items = [dict(doc) for doc in doc_list]
         df = pd.DataFrame(all_items)
         print(df.to_string(index=False))
+
+    def report(self, doc_list: list):
+        self.show_items(doc_list)
+        print('--------------- END OF REPORT ---------------')

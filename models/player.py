@@ -16,8 +16,7 @@ class Player:
 
     def create(self):
         self._db.create('player', {
-            # TODO: get last id in table + 1
-            'id': len(self._db.player_table) + 1,
+            'id': self._db.get_next_id('player'),
             'last_name': self.last_name,
             'first_name': self.first_name,
             'dob': self.dob,

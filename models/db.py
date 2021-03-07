@@ -2,11 +2,12 @@
 import os
 from os.path import exists
 
-from tinydb import TinyDB
+from tinydb import Query, TinyDB
 
 
 class Database:
     """ Database class to CRUD data and cache it"""
+
     def __init__(self):
         self.db = self.get_db()
         self.player_table = TinyDB.table(self.db, 'player')
@@ -36,6 +37,12 @@ class Database:
 
     def get_table(self, table):
         return self.player_table if table == 'player' else self.tournament_table
+
+    def get_next_id(self, table):
+        current_table = self.get_table(table)
+        q = Query()
+        return max(
+            [res.get('id') for res in current_table.search(q.id.exists())])
 
     # mix of both update and insert: UPSERT. This
     # operation is provided a document and a query.If it finds any documents

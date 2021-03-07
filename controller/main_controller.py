@@ -10,11 +10,10 @@ class MainController:
         """ Controller initializer. """
         self._view = view
         self._model = model
-
+        self._view.welcome()
         self.main_menu()
 
     def main_menu(self):
-        self._view.welcome()
         self._view.main_menu()
         main_choice = self._view.get_user_choice(self._view.DEFAULT_MSG,
                                                  [*range(0, 7)])
@@ -52,6 +51,11 @@ class MainController:
                 self._view.NEW_TOURNAMENT[item])
         if not tournament['date']:
             tournament['date'] = date.today().strftime('%d/%m/%Y')
+        tournament['players'] = []
+        for i in range(0, self._model.nb_players):
+            self._view.show_items(self._model.get_players())
+            tournament['players'].append(int(self._view.get_user_input(
+                self._view.SELECT_PLAYER)))
         self._model.create_tournament(tournament)
 
     def add_player(self):
@@ -65,6 +69,8 @@ class MainController:
 
     def players_report(self):
         self._view.report(self._model.get_players())
+        self.main_menu()
 
     def tournament_report(self):
         self._view.report(self._model.get_tournaments())
+        self.main_menu()

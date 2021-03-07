@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from datetime import date
 
 from models.db import Database
 from models.player import Player
@@ -17,23 +16,28 @@ class Tournament:
         # multiple matches are to be stored as a list on the turn instance
         self._db = Database()
         self.id = None
+        self.nb_players = 8
         self.players = []
         self.turns = {}
         self.nb_rounds = {}
         self.rounds = []
-        self.time = None
+        self.time_control = 'bullet'
         self.description = None
         self.name = None
         self.location = None
         self.date = None
 
+    def get_next_id(self, table: str = 'tournament'):
+        return self._db.get_next_id(table)
+
     def create_tournament(self, tournament: dict):
-        self._db.create('tournament', {
-            # TODO: get last id in table + 1
-            'id': len(self._db.tournament_table) + 1,
-            'name': tournament['name'],
-            'location': tournament['location'],
-            'date': tournament['date']})
+        data = {}
+        data['id'] = self._db.get_next_id('tournament')
+        for k, v in tournament.items():
+            data[k] = v
+        if 'time_control' not in data:
+            data['time_control'] = self.time_control
+        self._db.create('tournament', data)
 
     def create_player(self, player: dict):
         Player(player).create()
@@ -43,13 +47,6 @@ class Tournament:
 
     def get_players(self):
         return Player().get_players()
-
-    def save_new_entry(self, name, location, t_date, **kwargs):
-        current_items = {name: name, location: location, date: t_date}
-        for key, value in kwargs:
-            current_items[key] = value
-
-        self._db.insert(current_items)
 
     def update_entry(self, name, location, t_date, **kwargs):
         ...
