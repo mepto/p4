@@ -64,8 +64,8 @@ class MainView:
     def get_user_input(self, message):
         return input(f'{message}: ')
 
-    def show_items(self, doc_list: list):
-        all_items = [dict(doc) for doc in doc_list]
+    def show_items(self, items: list):
+        all_items = [dict(doc) for doc in items]
         df = pd.DataFrame(all_items)
         print(df.to_string(index=False))
 

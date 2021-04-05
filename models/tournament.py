@@ -1,26 +1,21 @@
 # -*- coding: utf-8 -*-
 
 from models.db import Database
+from models.match import Match
 from models.player import Player
+from models.round import Round
 
 
 class Tournament:
     """Manage a tournament"""
 
     def __init__(self):
-        # turn: a list of matches
-        # match: 1 set of 2 players with a result field for each player
-        # winner gets 1 pt, loser 0, stalemate 1/2 pt per player
-        # match: tuple of two lists, each with 2 items, a ref to an instance
-        # of player and a score
-        # multiple matches are to be stored as a list on the turn instance
         self._db = Database()
         self.id = None
         self.nb_players = 8
         self.players = []
-        self.turns = {}
-        self.nb_rounds = {}
-        self.rounds = []
+        self.round = {}
+        self.matches = []
         self.time_control = 'bullet'
         self.description = None
         self.name = None
@@ -31,25 +26,48 @@ class Tournament:
         return self._db.get_next_id(table)
 
     def create_tournament(self, tournament: dict):
-        data = {}
-        data['id'] = self._db.get_next_id('tournament')
+        data = {'id': self._db.get_next_id('tournament')}
         for k, v in tournament.items():
             data[k] = v
         if 'time_control' not in data:
             data['time_control'] = self.time_control
+        data['rounds'] = Round(1,
+                               self.generate_pairs(data['players'])).serialize()
         self._db.create('tournament', data)
 
-    def create_player(self, player: dict):
+    @staticmethod
+    def create_player(player: dict):
         Player(player).create()
 
     def get_tournaments(self):
         return self._db.read('tournament')
 
-    def get_players(self):
+    @staticmethod
+    def get_players():
         return Player().get_players()
 
-    def update_entry(self, name, location, t_date, **kwargs):
+    def edit_tournament(self, name, location, t_date, **kwargs):
         ...
 
-    def get_pairs(self):
+    def generate_pairs(self, players) -> list:
+        if not self.round:
+            return self.pair_by_ranking(players)
+        else:
+            return self.pair_by_points(players)
+
+    def pair_by_ranking(self, players):
+        players_list = []
+        # retrieve players and sort rankings
+        for p in players:
+            players_list.append(Player().get_rank(p))
+        players_list.sort(key=lambda player: player[1])
+        half = int(len(players_list) / 2)
+        match_list = []
+        for p in players_list[:(half)]:
+            second_player_index = players_list.index(p) + half
+            match = Match(p[0], players_list[second_player_index][0])
+            match_list.append(match.serialize())
+        return match_list
+
+    def pair_by_points(self, players):
         ...

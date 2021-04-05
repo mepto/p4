@@ -26,23 +26,24 @@ class MainController:
         elif choice == 1:
             # tournament creation
             self.add_tournament()
+            self.main_menu()
         elif choice == 2:
-            # tournament edition
-            ...
+            self.edit_tournament()
         elif choice == 3:
             # tournament print report
             self.tournament_report()
-            ...
+            self.main_menu()
         elif choice == 4:
             # player creation
             self.add_player()
-            ...
+            self.main_menu()
         elif choice == 5:
             # player edition
             ...
         elif choice == 6:
             # player print report
             self.players_report()
+            self.main_menu()
 
     def add_tournament(self):
         tournament = {}
@@ -69,8 +70,9 @@ class MainController:
 
     def players_report(self):
         self._view.report(self._model.get_players())
-        self.main_menu()
 
     def tournament_report(self):
         self._view.report(self._model.get_tournaments())
-        self.main_menu()
+
+    def edit_tournament(self):
+        self._view.edit_tournamen()

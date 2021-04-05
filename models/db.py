@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+from json.decoder import JSONDecodeError
 from os.path import exists
 
 from tinydb import Query, TinyDB
@@ -22,13 +23,20 @@ class Database:
             file = open(db_file_name, 'w+')
             file.close()
 
-        return TinyDB(db_file_name)
+        return TinyDB(db_file_name, sort_keys=True, indent=4,
+                      separators=(',', ': '))
 
     def create(self, table: str, item: dict):
         table_to_update = self.get_table(table)
         table_to_update.insert(item)
 
     def read(self, table, **kwargs):
+        if kwargs:
+            current_table = self.get_table(table)
+            q = Query()
+            for kw in kwargs:
+                results = current_table.search(q[kw] == kwargs[kw])
+            return results
         return [item for item in self.get_table(table)]
 
     def update(self, table: str, id: int, **kwargs):
@@ -41,8 +49,13 @@ class Database:
     def get_next_id(self, table):
         current_table = self.get_table(table)
         q = Query()
-        return max(
-            [res.get('id') for res in current_table.search(q.id.exists())])
+        try:
+            max_id = max(
+                [res.get('id') for res in current_table.search(q.id.exists())])
+            new_id = max_id + 1
+        except (JSONDecodeError, ValueError):
+            new_id = 1
+        return new_id
 
     # mix of both update and insert: UPSERT. This
     # operation is provided a document and a query.If it finds any documents
