@@ -31,8 +31,8 @@ class Tournament:
             data[k] = v
         if 'time_control' not in data:
             data['time_control'] = self.time_control
-        data['rounds'] = Round(1,
-                               self.generate_pairs(data['players'])).serialize()
+        self.round = Round(1, self.generate_pairs(data['players'])).serialize()
+        data['rounds'] = self.round
         self._db.create('tournament', data)
 
     @staticmethod
@@ -54,6 +54,18 @@ class Tournament:
             return self.pair_by_ranking(players)
         else:
             return self.pair_by_points(players)
+
+    def show_latest_pairs(self):
+        pairs = []
+        latest_round = list(self.round.keys())[-1]
+        for item in self.round[latest_round]['matches']:
+            pairs.append({
+                'player_1': Player(
+                    {'id': item['player_1']['id']}).get_player_name(),
+                'player_2': Player(
+                    {'id': item['player_2']['id']}).get_player_name()
+            })
+        return pairs
 
     def pair_by_ranking(self, players):
         players_list = []

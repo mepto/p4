@@ -58,6 +58,7 @@ class MainController:
             tournament['players'].append(int(self._view.get_user_input(
                 self._view.SELECT_PLAYER)))
         self._model.create_tournament(tournament)
+        self._view.show_items(self._model.show_latest_pairs())
 
     def add_player(self):
         player = {}
