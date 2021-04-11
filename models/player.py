@@ -7,6 +7,8 @@ class Player:
     """Create a player"""
 
     def __init__(self, player: dict = {}):
+        # TODO: cache db and use cached db
+        self._db = Database()
         self.id = player['id'] if 'id' in player else self._db.get_next_id(
             'player')
         self.last_name = player['last_name'] if 'last_name' in player else ''
@@ -15,8 +17,6 @@ class Player:
         self.dob = player['dob'] if 'dob' in player else ''
         self.gender = player['gender'] if 'gender' in player else ''
         self.ranking = int(player['ranking']) if 'ranking' in player else ''
-        # TODO: cache db and use cached db
-        self._db = Database()
 
     def create(self):
         self._db.create('player', self.serialize())

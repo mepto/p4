@@ -29,7 +29,7 @@ class Tournament:
         data = {'id': self._db.get_next_id('tournament')}
         for k, v in tournament.items():
             data[k] = v
-        if 'time_control' not in data:
+        if 'time_control' not in data or not data['time_control']:
             data['time_control'] = self.time_control
         self.round = Round(1, self.generate_pairs(data['players'])).serialize()
         data['rounds'] = self.round
