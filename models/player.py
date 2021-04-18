@@ -24,8 +24,8 @@ class Player:
     def serialize(self):
         return {
             'id': self.id,
-            'last_name': self.last_name,
-            'first_name': self.first_name,
+            'last_name': self.last_name.upper(),
+            'first_name': self.first_name.capitalize(),
             'dob': self.dob,
             'gender': self.gender,
             'ranking': self.ranking

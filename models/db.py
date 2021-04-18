@@ -30,7 +30,7 @@ class Database:
         table_to_update = self.get_table(table)
         table_to_update.insert(item)
 
-    def read(self, table, **kwargs):
+    def read(self, table, **kwargs) -> list:
         if kwargs:
             current_table = self.get_table(table)
             q = Query()

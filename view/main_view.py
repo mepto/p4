@@ -3,7 +3,6 @@ import pandas as pd
 
 
 class MainView:
-
     DEFAULT_MSG = 'Please make your selection: '
     NEW_TOURNAMENT = {'name': 'Enter tournament name',
                       'location': 'Enter tournament location',
@@ -15,39 +14,77 @@ class MainView:
                   'dob': "Enter player's date of birth (dd/mm/yyyy)",
                   'gender': "Enter player's gender (M/F/O)",
                   'ranking': "Enter player's ranking"}
-    SELECT_PLAYER = 'Select player from players list'
+    SELECT_PLAYER = 'Please select a player'
 
-    def welcome(self):
+    @staticmethod
+    def welcome():
         print('''
         ********************************************
         * Welcome to your chess tournament manager *
         ********************************************
         ''')
 
-    def main_menu(self):
+    @staticmethod
+    def main_menu():
         print('''
         ---------------- MAIN MENU -----------------
         0 - Exit
         ---------------------
-        1 - Create tournament
-        2 - Edit tournament
-        3 - View tournament report
-        ---------------------
-        4 - Create player
-        5 - Edit player
-        6 - View player report
+        1 - Tournament management
+        2 - Player management
+        3 - Global reports
         ''')
 
-    def exit(self):
-        print("---------------- THANK YOU! -----------------")
+    @staticmethod
+    def tournament_menu():
+        print('''
+        ------------- TOURNAMENT MENU --------------
+        0 - Exit
+        1 - Back
+        ---------------------
+        2 - Create tournament
+        3 - Enter match results
+        4 - List tournament players (alpha)
+        5 - List tournament players (ranking)
+        6 - List tournament matches
+        7 - List tournament rounds
+        ''')
 
-    def get_user_choice(self, message, choice_list):
+    @staticmethod
+    def player_menu():
+        print('''
+        --------------- PLAYER MENU ----------------
+        0 - Exit
+        1 - Back
+        ---------------------
+        2 - Create player
+        3 - Edit player
+        ''')
+
+    @staticmethod
+    def report_menu():
+        print('''
+        --------------- REPORT MENU ----------------
+        0 - Exit
+        1 - Back
+        ---------------------
+        2 - All tournaments report
+        3 - All players report (alpha)
+        4 - All players report (ranking)
+        ''')
+
+    @staticmethod
+    def exit():
+        print("--------------- SEE YOU SOON ----------------")
+
+    @staticmethod
+    def get_user_choice(message: str, choice_list: list) -> int:
         """
         Loops until user enters proper choice
         :return: user choice
         """
         user_choice = input(message)
-        while not user_choice or not user_choice.isdigit() or\
+        while not user_choice or not user_choice.isdigit() or \
                 int(user_choice) not in choice_list:
             reason = None
             if len(user_choice) == 0:
@@ -61,10 +98,12 @@ class MainView:
 
         return int(user_choice)
 
-    def get_user_input(self, message):
+    @staticmethod
+    def get_user_input(message):
         return input(f'{message}: ')
 
-    def show_items(self, items: list):
+    @staticmethod
+    def show_items(items: list):
         all_items = [dict(doc) for doc in items]
         df = pd.DataFrame(all_items)
         print(df.to_string(index=False))
@@ -72,3 +111,6 @@ class MainView:
     def report(self, doc_list: list):
         self.show_items(doc_list)
         print('--------------- END OF REPORT ---------------')
+
+    def confirm(self, item: str):
+        print(f"*** {item.capitalize()} created successfully ***")
