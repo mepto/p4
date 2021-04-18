@@ -6,7 +6,7 @@ Chess tournament tool is an offline tool that lets users follow and update a che
 ## How to install
 1. Clone the repository on your computer.
 
-`git clone https://github.com/mepto/p2.git`
+`git clone https://github.com/mepto/p4.git`
 
 2. Make sure you use python 3.8.5. Check your python version:
 
@@ -34,3 +34,7 @@ Chess tournament tool is an offline tool that lets users follow and update a che
 1. At project root, to launch the script type
 
 `python main.py`
+
+### Navigation
+Use numbers as indicated in the menu(s) displayed in the application to 
+navigate and create items, update items or print reports.
