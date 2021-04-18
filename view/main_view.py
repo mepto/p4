@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import pandas as pd
+from tabulate import tabulate
 
 
 class MainView:
@@ -105,8 +105,8 @@ class MainView:
     @staticmethod
     def show_items(items: list):
         all_items = [dict(doc) for doc in items]
-        df = pd.DataFrame(all_items)
-        print(df.to_string(index=False))
+        header = {key: key.upper() for data in all_items for key in data.keys()}
+        print(tabulate(all_items, header, tablefmt="github"))
 
     def report(self, doc_list: list):
         self.show_items(doc_list)

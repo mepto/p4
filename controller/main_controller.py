@@ -153,7 +153,7 @@ class MainController:
         # lists all tournaments and returns the selected id
         all_tournaments = self.tournament_report()
         return self._view.get_user_choice(
-            'Select a tournament', [*range(0, len(all_tournaments))])
+            'Select a tournament', [*range(1, len(all_tournaments) + 1)])
 
     def tournament_matches_report(self):
         """Show matches for a single tournament"""
