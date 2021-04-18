@@ -66,16 +66,18 @@ class Tournament:
 
     def get_matches(self, tournament_id: int = None) -> list:
         if tournament_id:
-            matches = []
             db_data = self._db.read('tournament', **{'id': tournament_id})
             tournament = Tournament(db_data[0])
             matches = []
             for pair in tournament.matches:
                 match = {}
+                count = 1
                 for player in pair:
-                    item = pair[player]
-                    name = Player({'id': item['id']}).get_player_name()
-                    match[player] = f"{name}, score {item['score']}"
+                    name = Player({'id': player[0]}).get_player_name()
+                    score = player[1]
+                    current_player = f"Player {count}"
+                    match[current_player] = f"{name}, score {score}"
+                    count += 1
                 matches.append(match)
             return matches
         return [{'matches': 'Nothing to report'}]
@@ -99,20 +101,20 @@ class Tournament:
         ...
 
     def generate_pairs(self, players) -> list:
-        if not self.round:
+        if not self.rounds:
             return self.pair_by_ranking(players)
         else:
             return self.pair_by_points(players)
 
     def show_latest_pairs(self) -> list:
         pairs = []
-        latest_round = list(self.round.keys())[-1]
-        for item in self.round[latest_round]['matches']:
+        latest_round = list(self.rounds.keys())[-1]
+        for item in self.rounds[latest_round]['matches']:
             pairs.append({
                 'player_1': Player(
-                    {'id': item['player_1']['id']}).get_player_name(),
+                    {'id': item[0][0]}).get_player_name(),
                 'player_2': Player(
-                    {'id': item['player_2']['id']}).get_player_name()
+                    {'id': item[1][0]}).get_player_name()
             })
         return pairs
 
