@@ -33,13 +33,13 @@ class Player:
 
     def get_rank(self, p_id):
         item = self.get_item(p_id)
-        return item[0]['id'], item[0]['ranking']
+        return item[0][0]['id'], item[0][0]['ranking']
 
     def get_players(self):
         return self._db.read('player')
 
     def get_player_name(self):
-        item = self.get_item(self.id)
+        item = self.get_item(self.id)[0]
         return f"{item[0]['last_name'].upper()} " \
                f"{item[0]['first_name'].capitalize()}"
 

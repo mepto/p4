@@ -15,6 +15,8 @@ class MainView:
                   'gender': "Enter player's gender (M/F/O)",
                   'ranking': "Enter player's ranking"}
     SELECT_PLAYER = 'Please select a player'
+    SET_SCORES = {'score_p1': 'Enter score for player 1',
+                  'score_p2': 'Enter score for player 2'}
 
     @staticmethod
     def welcome():

@@ -59,7 +59,7 @@ class MainController:
             self.add_tournament()
             self.tournament_menu()
         elif choice == 3:
-            self.enter_match_results()
+            self.set_match_results()
             self.tournament_menu()
         elif choice == 4:
             # List tournament players (alpha)
@@ -77,7 +77,6 @@ class MainController:
             # List tournament rounds
             self.tournament_rounds_reports()
             self.tournament_menu()
-            ...
 
     def player_menu_choice(self, choice):
         if choice == 0:
@@ -139,8 +138,25 @@ class MainController:
         self._model.create_player(player)
         self._view.confirm('player')
 
-    def enter_match_results(self):
-        self._view.enter_match_results()
+    def set_match_results(self):
+        # Get user to select tournament and match
+        tournament = self.select_tournament()
+        matches = self._model.get_matches(tournament, last_round=True)
+        self._view.show_items(matches)
+        match = self._view.get_user_choice(
+            'Select a match', [*range(1, len(matches) + 1)]) - 1
+
+        final_scores = []
+        count = 1
+
+        # Get user to enter new scores
+        for item in self._view.SET_SCORES:
+            player = f'Player {count}'
+            final_scores.append(int(self._view.get_user_input(
+                f"{self._view.SET_SCORES[item]} ({matches[match][player]})")))
+            count += 1
+        # Manage new scores entry
+        self._model.set_match_results(tournament, match, final_scores)
 
     # Tournament reports
     def tournament_players_report(self, sort_order='alpha'):

@@ -34,14 +34,19 @@ class Database:
         if kwargs:
             current_table = self.get_table(table)
             q = Query()
+            results = []
             for kw in kwargs:
-                results = current_table.search(q[kw] == kwargs[kw])
+                results.append(current_table.search(q[kw] == kwargs[kw]))
             return results
         return [item for item in self.get_table(table)]
 
-    def update(self, table: str, id: int, **kwargs):
+    def update(self, table: str, item_id: int, **kwargs):
         table_to_update = self.get_table(table)
-        table_to_update.update(kwargs)
+        # doc = Query()
+        for item in kwargs:
+            print(kwargs[item])
+            print(item, kwargs[item])
+            table_to_update.update({item: kwargs[item]}, doc_ids=[item_id])
 
     def get_table(self, table):
         return self.player_table if table == 'player' else self.tournament_table
@@ -56,15 +61,3 @@ class Database:
         except (JSONDecodeError, ValueError):
             new_id = 1
         return new_id
-
-    # mix of both update and insert: UPSERT. This
-    # operation is provided a document and a query.If it finds any documents
-    # matching the query, they will be updated
-    # with the data from the provided document.On the other hand,
-    # if no matching document is found, it inserts the provided document into
-    # the table:
-    #
-    # >> > db.upsert({'name': 'John', 'logged-in': True}, User.name == 'John')
-    # This will update all users with the name John to have logged- in set
-    # to True.If no matching user is found, a new document is inserted with
-    # both the name set and the logged- in flag.
