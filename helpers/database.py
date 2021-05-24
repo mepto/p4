@@ -44,8 +44,6 @@ class Database:
         table_to_update = self.get_table(table)
         # doc = Query()
         for item in kwargs:
-            print(kwargs[item])
-            print(item, kwargs[item])
             table_to_update.update({item: kwargs[item]}, doc_ids=[item_id])
 
     def get_table(self, table):

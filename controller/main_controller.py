@@ -2,6 +2,9 @@
 import sys
 from datetime import date
 
+import config
+from models.tournament import Tournament
+
 
 class MainController:
     """ Create a Controller class to connect the GUI and the model """
@@ -15,25 +18,25 @@ class MainController:
 
     def main_menu(self):
         self._view.main_menu()
-        main_choice = self._view.get_user_choice(self._view.DEFAULT_MSG,
+        main_choice = self._view.get_user_choice(config.DEFAULT_MSG,
                                                  [*range(0, 4)])
         self.main_menu_choice(main_choice)
 
     def tournament_menu(self):
         self._view.tournament_menu()
-        tournament_choice = self._view.get_user_choice(self._view.DEFAULT_MSG,
+        tournament_choice = self._view.get_user_choice(config.DEFAULT_MSG,
                                                        [*range(0, 8)])
         self.tournament_menu_choice(tournament_choice)
 
     def player_menu(self):
         self._view.player_menu()
-        player_choice = self._view.get_user_choice(self._view.DEFAULT_MSG,
+        player_choice = self._view.get_user_choice(config.DEFAULT_MSG,
                                                    [*range(0, 4)])
         self.player_menu_choice(player_choice)
 
     def report_menu(self):
         self._view.report_menu()
-        report_choice = self._view.get_user_choice(self._view.DEFAULT_MSG,
+        report_choice = self._view.get_user_choice(config.DEFAULT_MSG,
                                                    [*range(0, 5)])
         self.report_menu_choice(report_choice)
 
@@ -112,64 +115,74 @@ class MainController:
             self.report_menu()
 
     def add_tournament(self):
-        tournament = {}
-        for item in self._view.NEW_TOURNAMENT:
-            tournament[item] = self._view.get_user_input(
-                self._view.NEW_TOURNAMENT[item])
-        if not tournament['date']:
-            tournament['date'] = date.today().strftime('%d/%m/%Y')
-        tournament['players'] = []
+        data = {}
+        for item in config.NEW_TOURNAMENT:
+            data[item] = self._view.get_user_input(
+                config.NEW_TOURNAMENT[item])
+        if not data['date']:
+            data['date'] = date.today().strftime('%d/%m/%Y')
+        data['players'] = []
+        self._model = Tournament({})
         for i in range(0, self._model.nb_players):
             self._view.show_items(self._model.get_players())
-            tournament['players'].append(int(self._view.get_user_input(
-                self._view.SELECT_PLAYER)))
-        self._model.create_tournament(tournament)
+            data['players'].append(int(self._view.get_user_input(
+                config.SELECT_PLAYER)))
+        self._model = Tournament(self._model.create_tournament(data))
         self._view.confirm('tournament')
-        self._view.confirm('pairs')
         self._view.show_items(self._model.show_latest_pairs())
+        self._view.confirm('pairs')
 
     def add_player(self):
         player = {}
-        for item in self._view.NEW_PLAYER:
+        for item in config.NEW_PLAYER:
             player[item] = self._view.get_user_input(
-                self._view.NEW_PLAYER[item])
+                config.NEW_PLAYER[item])
         if not player['ranking']:
             player['ranking'] = 9999
+        self._model = Tournament({})
         self._model.create_player(player)
         self._view.confirm('player')
 
     def set_match_results(self):
         # Get user to select tournament and match
-        tournament = self.select_tournament()
-        matches = self._model.get_matches(tournament, last_round=True)
-        self._view.show_items(matches)
-        match = self._view.get_user_choice(
-            'Select a match', [*range(1, len(matches) + 1)]) - 1
+        is_entering_score = True
+        tournament_id = self.select_tournament()
+        self._model = Tournament({'id': tournament_id})
 
-        final_scores = []
-        count = 1
-
-        # Get user to enter new scores
-        for item in self._view.SET_SCORES:
-            player = f'Player {count}'
-            final_scores.append(int(self._view.get_user_input(
-                f"{self._view.SET_SCORES[item]} ({matches[match][player]})")))
-            count += 1
-        # Manage new scores entry
-        self._model.set_match_results(tournament, match, final_scores)
+        while is_entering_score:
+            matches = self._model.get_matches(last_round=True)
+            self._view.show_items(matches)
+            match = self._view.get_user_choice(
+                'Select a match', [*range(1, len(matches) + 1)]) - 1
+            final_scores = []
+            count = 1
+            # Get user to enter new scores
+            for item in config.SET_SCORES:
+                player = f'Player {count}'
+                final_scores.append(float(self._view.get_user_input(
+                    f"{config.SET_SCORES[item]} ({matches[match][player]})")))
+                count += 1
+            # Manage new scores entry
+            self._model.set_match_results(match, final_scores)
+            # Ask for new entry
+            new_entry = int(self._view.get_user_choice(config.ADD_ANOTHER,
+                                                       [0, 1]))
+            if not new_entry:
+                is_entering_score = False
 
     # Tournament reports
     def tournament_players_report(self, sort_order='alpha'):
         """Show players for a single tournament"""
-        # get user to select tournament
         tournament_id = self.select_tournament()
         self.players_report(tournament_id, sort_order)
 
-    def select_tournament(self):
+    def select_tournament(self) -> int:
         # lists all tournaments and returns the selected id
         all_tournaments = self.tournament_report()
+        # sub['gfg'] for sub in test_list
+        ids = [item['id'] for item in all_tournaments]
         return self._view.get_user_choice(
-            'Select a tournament', [*range(1, len(all_tournaments) + 1)])
+            'Select a tournament', ids)
 
     def tournament_matches_report(self):
         """Show matches for a single tournament"""
@@ -188,5 +201,7 @@ class MainController:
 
     def tournament_report(self):
         """Show all tournaments in DB"""
+        if not self._model:
+            self._model = Tournament({})
         self._view.report(self._model.get_tournaments())
         return self._model.get_tournaments()

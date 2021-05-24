@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from models.db import Database
+from helpers.database import Database
 
 
 class Player:

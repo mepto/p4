@@ -1,83 +1,34 @@
 # -*- coding: utf-8 -*-
 from tabulate import tabulate
 
+import config
+
 
 class MainView:
-    DEFAULT_MSG = 'Please make your selection: '
-    NEW_TOURNAMENT = {'name': 'Enter tournament name',
-                      'location': 'Enter tournament location',
-                      'date': 'Enter tournament date (dd/mm/yyyy)',
-                      'time_control': 'Enter time control type (bullet, '
-                                      'blitz, speed)'}
-    NEW_PLAYER = {'last_name': "Enter player's last name",
-                  'first_name': "Enter player's first name",
-                  'dob': "Enter player's date of birth (dd/mm/yyyy)",
-                  'gender': "Enter player's gender (M/F/O)",
-                  'ranking': "Enter player's ranking"}
-    SELECT_PLAYER = 'Please select a player'
-    SET_SCORES = {'score_p1': 'Enter score for player 1',
-                  'score_p2': 'Enter score for player 2'}
-
+    """ Display messages to the user in the console """
     @staticmethod
     def welcome():
-        print('''
-        ********************************************
-        * Welcome to your chess tournament manager *
-        ********************************************
-        ''')
+        print(config.WELCOME)
 
     @staticmethod
     def main_menu():
-        print('''
-        ---------------- MAIN MENU -----------------
-        0 - Exit
-        ---------------------
-        1 - Tournament management
-        2 - Player management
-        3 - Global reports
-        ''')
+        print(config.MAIN_MENU)
 
     @staticmethod
     def tournament_menu():
-        print('''
-        ------------- TOURNAMENT MENU --------------
-        0 - Exit
-        1 - Back
-        ---------------------
-        2 - Create tournament
-        3 - Enter match results
-        4 - List tournament players (alpha)
-        5 - List tournament players (ranking)
-        6 - List tournament matches
-        7 - List tournament rounds
-        ''')
+        print(config.TOURNAMENT_MENU)
 
     @staticmethod
     def player_menu():
-        print('''
-        --------------- PLAYER MENU ----------------
-        0 - Exit
-        1 - Back
-        ---------------------
-        2 - Create player
-        3 - Edit player
-        ''')
+        print(config.PLAYER_MENU)
 
     @staticmethod
     def report_menu():
-        print('''
-        --------------- REPORT MENU ----------------
-        0 - Exit
-        1 - Back
-        ---------------------
-        2 - All tournaments report
-        3 - All players report (alpha)
-        4 - All players report (ranking)
-        ''')
+        print(config.REPORT_MENU)
 
     @staticmethod
     def exit():
-        print("--------------- SEE YOU SOON ----------------")
+        print(config.EXIT)
 
     @staticmethod
     def get_user_choice(message: str, choice_list: list) -> int:
@@ -112,7 +63,7 @@ class MainView:
 
     def report(self, doc_list: list):
         self.show_items(doc_list)
-        print('--------------- END OF REPORT ---------------')
+        print(config.REPORT_END)
 
     def confirm(self, item: str):
         print(f"*** {item.capitalize()} created successfully ***")

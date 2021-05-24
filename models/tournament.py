@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from models.db import Database
-from models.match import Match
+from helpers.database import Database
+from helpers.match import Match
+from helpers.round import Round
 from models.player import Player
-from models.round import Round
 
 
 class Tournament:
@@ -11,31 +11,36 @@ class Tournament:
 
     def __init__(self, tournament: dict = {}):
         self._db = Database()
-        self.id = tournament['id'] if 'id' in tournament else \
-            self._db.get_next_id('tournament')
         self.nb_players = 8
-        self.players = tournament['players'] if 'players' in tournament else []
-        self.matches = []
-        if 'rounds' not in tournament:
-            self.rounds = {}
+        if tournament and 'id' in tournament:
+            self.id = tournament['id']
+            existing_tournament = self.get_tournament(self.id)[0][0]
+            self.players = existing_tournament['players'] or []
+            self.matches = []
+            self.rounds = existing_tournament['rounds'] or {}
+            self.time_control = existing_tournament['time_control'] or 'bullet'
+            self.description = existing_tournament['description'] or None
+            self.name = existing_tournament['name'] or None
+            self.location = existing_tournament['location'] or tournament[
+                'location']
+            self.date = existing_tournament['date'] or tournament['date']
         else:
-            self.rounds = tournament['rounds']
-            for item in self.rounds:
-                self.matches.append(self.rounds[item]['matches'])
-        self.time_control = 'bullet' if 'time_control' not in tournament else \
-            tournament['time_control']
-        self.description = tournament['description'] if 'description' in \
-                                                        tournament else None
-        self.name = tournament['name'] if 'name' in tournament else None
-        self.location = None if 'location' not in tournament else \
-            tournament['location']
-        self.date = tournament['date'] if 'date' in tournament else None
+            self.id = None
+            self.players = []
+            self.matches = []
+            self.rounds = {}
+            self.time_control = 'bullet'
+            self.description = None
+            self.name = None
+            self.location = None
+            self.date = None
 
     def get_next_id(self, table: str = 'tournament') -> int:
         return self._db.get_next_id(table)
 
     def create_tournament(self, tournament: dict):
-        data = {'id': self._db.get_next_id('tournament')}
+        new_id = self._db.get_next_id('tournament')
+        data = {'id': new_id}
         for key, value in tournament.items():
             data[key] = value
         if 'time_control' not in data or not data['time_control']:
@@ -44,6 +49,7 @@ class Tournament:
                             self.generate_pairs(data['players'])).serialize()
         data['rounds'] = self.rounds
         self._db.create('tournament', data)
+        return {'id': new_id}
 
     @staticmethod
     def create_player(player: dict):
@@ -52,11 +58,13 @@ class Tournament:
     def get_tournaments(self) -> list:
         return self._db.read('tournament')
 
-    def get_players(self, tournament_id: int = None,
-                    order: str = None) -> list:
+    def get_tournament(self, tournament_id) -> list:
+        return self._db.read('tournament', **{'id': tournament_id})
+
+    def get_players(self, order: str = None) -> list:
         all_players = Player().get_players()  # list of dicts
-        if tournament_id:
-            tournament = self._db.read('tournament', **{'id': tournament_id})
+        if self.id:
+            tournament = self._db.read('tournament', **{'id': self.id})
             for player in all_players:
                 if player['id'] not in tournament[0]['players']:
                     all_players.remove(player)
@@ -66,12 +74,11 @@ class Tournament:
             all_players.sort(key=lambda item: item.get('ranking'))
         return all_players
 
-    def get_matches(self, tournament_id: int = None,
-                    last_round: bool = False) -> list:
+    def get_matches(self, last_round: bool = False) -> list:
         no_results = [{'matches': 'Nothing to report'}]
-        if tournament_id:
+        if self.id:
             tournament_data = self._db.read('tournament',
-                                            **{'id': tournament_id})[0][0]
+                                            **{'id': self.id})[0][0]
             rounds = tournament_data['rounds']
             matches = []
             results = []
@@ -99,11 +106,11 @@ class Tournament:
             return results if results else no_results
         return no_results
 
-    def get_rounds(self, tournament_id: int = None) -> list:
+    def get_rounds(self) -> list:
         no_result = [{'rounds': 'Nothing to report'}]
-        if tournament_id:
+        if self.id:
             data = []
-            db_data = self._db.read('tournament', **{'id': tournament_id})
+            db_data = self._db.read('tournament', **{'id': self.id})
             tournament = Tournament(db_data[0])
             rounds = tournament.rounds
             for round in rounds:
@@ -115,9 +122,8 @@ class Tournament:
             return data if data else no_result
         return no_result
 
-    def set_match_results(self, tournament_id: int, match_index: int,
-                          scores: list):
-        doc = self._db.read('tournament', **{'id': tournament_id})[0][0]
+    def set_match_results(self, match_index: int, scores: list):
+        doc = self._db.read('tournament', **{'id': self.id})[0][0]
         doc_id = doc.doc_id
         last_round = f"Round {len(doc['rounds'])}"
         match_to_update = doc['rounds'][last_round]['matches'][match_index]
