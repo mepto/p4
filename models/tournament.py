@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
 
 from helpers.database import Database
 from helpers.match import Match
@@ -46,7 +47,7 @@ class Tournament:
         if 'time_control' not in data or not data['time_control']:
             data['time_control'] = self.time_control
         self.rounds = Round(1,
-                            self.generate_pairs(data['players'])).serialize()
+                            self.generate_pairs()).serialize()
         data['rounds'] = self.rounds
         self._db.create('tournament', data)
         return {'id': new_id}
@@ -64,9 +65,8 @@ class Tournament:
     def get_players(self, order: str = None) -> list:
         all_players = Player().get_players()  # list of dicts
         if self.id:
-            tournament = self._db.read('tournament', **{'id': self.id})
             for player in all_players:
-                if player['id'] not in tournament[0]['players']:
+                if player['id'] not in self.players:
                     all_players.remove(player)
         if order == 'alpha':
             all_players.sort(key=lambda item: item.get('last_name').upper())
@@ -133,14 +133,40 @@ class Tournament:
             count += 1
 
         doc['rounds'][last_round]['matches'][match_index] = match_to_update
-
+        self.rounds = doc['rounds']
         self._db.update('tournament', item_id=doc_id, **doc)
 
-    def generate_pairs(self, players) -> list:
+    def is_round_over(self):
+        doc = self._db.read('tournament', **{'id': self.id})[0][0]
+        last_round = f"Round {len(doc['rounds'])}"
+        for item in doc['rounds'][last_round]['matches']:
+            if None in [item[0][1], item[1][1]]:
+                return False
+        return True
+
+    def set_round_end(self):
+        doc = self._db.read('tournament', **{'id': self.id})[0][0]
+        doc_id = doc.doc_id
+        last_round = f"Round {len(doc['rounds'])}"
+        doc['rounds'][last_round]['end_time'] = datetime.now().isoformat()
+        self._db.update('tournament', item_id=doc_id, **doc)
+
+    def create_new_round(self):
+        doc = self._db.read('tournament', **{'id': self.id})[0][0]
+        doc_id = doc.doc_id
+        all_rounds = doc['rounds']
+        len_rounds = len(all_rounds)
+        # self.generate_pairs()
+        new_round = Round(len_rounds + 1, self.generate_pairs()).serialize()
+        doc['rounds'].update(new_round)
+        self.rounds = doc['rounds']
+        self._db.update('tournament', item_id=doc_id, **doc)
+
+    def generate_pairs(self) -> list:
         if not self.rounds:
-            return self.pair_by_ranking(players)
+            return self.pair_by_ranking()
         else:
-            return self.pair_by_points(players)
+            return self.pair_by_points()
 
     def show_latest_pairs(self) -> list:
         pairs = []
@@ -154,10 +180,10 @@ class Tournament:
             })
         return pairs
 
-    def pair_by_ranking(self, players) -> list:
+    def pair_by_ranking(self) -> list:
         players_list = []
         # retrieve players and sort rankings
-        for p in players:
+        for p in self.players:
             players_list.append(Player().get_rank(p))
         players_list.sort(key=lambda player: player[1])
         half = int(len(players_list) / 2)
@@ -168,8 +194,69 @@ class Tournament:
             match_list.append(match.serialize())
         return match_list
 
-    def pair_by_points(self, players):
-        ...
+    def pair_by_points(self):
+        match_list = []
+        initial_scoreboard = self.create_scoreboard()
+        scoreboard = initial_scoreboard.copy()
+        match_nb = 1
+        while match_nb <= (len(self.players) / 2):
+            current_player = next(iter(scoreboard.items()))
+            current_opponent = current_player[1]['playables'][0]
+            match = Match(current_player[0], current_opponent)
+            match_list.append(match.serialize())
+            for item in scoreboard:
+                try:
+                    scoreboard[item]['playables'].remove(current_opponent)
+                except ValueError:
+                    pass
+                try:
+                    scoreboard[item]['playables'].remove(current_player[0])
+                except ValueError:
+                    pass
+            scoreboard.pop(current_player[0])
+            scoreboard.pop(current_opponent)
+            match_nb += 1
+
+        return match_list
+
+    def create_scoreboard(self):
+        scoreboard = {}
+        all_matches = []
+        for item in self.rounds:
+            for match in self.rounds[item]['matches']:
+                all_matches.append([match[0][0], match[1][0]])
+                for player in match:
+                    player_id = player[0]
+                    player_score = player[1]
+                    if player_id not in scoreboard:
+                        scoreboard[player_id] = {
+                            'score': player_score}
+                    else:
+                        scoreboard[player_id]['score'] = (
+                            scoreboard[player_id]['score'] + player_score
+                        )
+
+        ordered_players = sorted(scoreboard,
+                                 key=lambda item: (scoreboard[item]['score']),
+                                 reverse=True)
+        sorted_scoreboard = {}
+        for item in ordered_players:
+            sorted_scoreboard[item] = scoreboard[item]
+
+        for player in sorted_scoreboard:
+            sorted_scoreboard[player]['playables'] = ordered_players.copy()
+            player_index = scoreboard[player]['playables'].index(player)
+            sorted_scoreboard[player]['playables'].pop(player_index)
+            for match in all_matches:
+                if player in match:
+                    player_index = match.index(player)
+                    opponent = match[player_index + 1] if player_index == 0 \
+                        else match[player_index - 1]
+                    opponent_index = scoreboard[player]['playables'].index(
+                        opponent)
+                    scoreboard[player]['playables'].pop(opponent_index)
+
+        return sorted_scoreboard
 
     @staticmethod
     def get_player_name(player_id):

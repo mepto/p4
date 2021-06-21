@@ -164,17 +164,23 @@ class MainController:
                 count += 1
             # Manage new scores entry
             self._model.set_match_results(match, final_scores)
-            # Ask for new entry
-            new_entry = int(self._view.get_user_choice(config.ADD_ANOTHER,
-                                                       [0, 1]))
-            if not new_entry:
-                is_entering_score = False
+            # Check if round matches scores are full
+            if self._model.is_round_over():
+                self._model.set_round_end()
+                self._model.create_new_round()
+                self._model.show_latest_pairs()
+            else:
+                # Ask for new entry
+                new_entry = int(self._view.get_user_choice(
+                    config.ADD_ANOTHER, [0, 1]))
+                if not new_entry:
+                    is_entering_score = False
 
     # Tournament reports
     def tournament_players_report(self, sort_order='alpha'):
         """Show players for a single tournament"""
-        tournament_id = self.select_tournament()
-        self.players_report(tournament_id, sort_order)
+        self._model = Tournament({'id': self.select_tournament()})
+        self.players_report(sort_order)
 
     def select_tournament(self) -> int:
         # lists all tournaments and returns the selected id
@@ -195,9 +201,9 @@ class MainController:
         self._view.report(self._model.get_rounds(tournament_id))
 
     # Full reports
-    def players_report(self, tournament_id=None, sort_order='alpha'):
+    def players_report(self, sort_order='alpha'):
         """Show all players in DB"""
-        self._view.report(self._model.get_players(tournament_id, sort_order))
+        self._view.report(self._model.get_players(sort_order))
 
     def tournament_report(self):
         """Show all tournaments in DB"""
