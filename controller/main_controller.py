@@ -9,7 +9,7 @@ class MainController:
     """ Create a Controller class to connect the GUI and the model """
 
     def __init__(self, view: object, model: object):
-        """ Controller initializer. """
+        """ Controller initializer """
         self._view = view
         self._model = model
         self._view.welcome()

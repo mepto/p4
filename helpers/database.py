@@ -6,14 +6,13 @@ from tinydb import Query, TinyDB
 
 
 class Database:
-    """ Database class to CRUD data and cache it"""
+    """ Database class to CRUD data"""
 
     def __init__(self):
         self.db = self.get_db()
         self.player_table = TinyDB.table(self.db, 'player')
         self.tournament_table = TinyDB.table(self.db, 'tournament')
 
-    # IN INIT MUST BE CACHED  - CALLED IN
     @staticmethod
     def get_db():
         db_file_name = 'chess_db.json'
@@ -40,7 +39,6 @@ class Database:
 
     def update(self, table: str, item_id: int, **kwargs):
         table_to_update = self.get_table(table)
-        # doc = Query()
         for item in kwargs:
             table_to_update.update({item: kwargs[item]}, doc_ids=[item_id])
 

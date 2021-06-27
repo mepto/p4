@@ -162,7 +162,6 @@ class Tournament:
         doc_id = doc.doc_id
         all_rounds = doc['rounds']
         len_rounds = len(all_rounds)
-        # self.generate_pairs()
         new_round = Round(len_rounds + 1, self.generate_pairs()).serialize()
         doc['rounds'].update(new_round)
         self.rounds = doc['rounds']
