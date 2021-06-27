@@ -8,9 +8,6 @@ class Round:
         self.start_time = self.get_now()
         self.end_time = None
 
-    def set_end_time(self):
-        self.end_time = self.get_now()
-
     @staticmethod
     def get_now():
         return datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
