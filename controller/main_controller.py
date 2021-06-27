@@ -152,7 +152,7 @@ class MainController:
             matches = self._model.get_matches(last_round=True)
             self._view.show_items(matches)
             match = self._view.get_user_choice(
-                'Select a match', [*range(1, len(matches) + 1)]) - 1
+                config.SELECT_MATCH, [*range(1, len(matches) + 1)]) - 1
             final_scores = []
             count = 1
             # Get user to enter new scores
@@ -184,10 +184,9 @@ class MainController:
     def select_tournament(self) -> int:
         # lists all tournaments and returns the selected id
         all_tournaments = self.tournament_report()
-        # sub['gfg'] for sub in test_list
         ids = [item['id'] for item in all_tournaments]
         return self._view.get_user_choice(
-            'Select a tournament', ids)
+            config.SELECT_TOURNAMENT, ids)
 
     def tournament_matches_report(self):
         """Show matches for a single tournament"""

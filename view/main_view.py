@@ -66,3 +66,6 @@ class MainView:
 
     def confirm(self, item: str):
         print(f"*** {item.capitalize()} created successfully ***")
+
+    def rounds_done(self):
+        print(config.ROUNDS_DONE)

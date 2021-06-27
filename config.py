@@ -11,6 +11,8 @@ NEW_PLAYER = {'last_name': "Enter player's last name",
               'gender': "Enter player's gender (M/F/O)",
               'ranking': "Enter player's ranking"}
 SELECT_PLAYER = 'Please select a player'
+SELECT_MATCH = 'Please select a match'
+SELECT_TOURNAMENT = 'Please select a tournament'
 SET_SCORES = {'score_p1': 'Enter score for player 1',
               'score_p2': 'Enter score for player 2'}
 ADD_ANOTHER = 'Would you like to add another? ([1] Yes, [0] No)'
@@ -58,3 +60,4 @@ REPORT_MENU = '''
 '''
 REPORT_END = '--------------- END OF REPORT ---------------'
 EXIT = "--------------- SEE YOU SOON ----------------"
+ROUNDS_DONE = 'All rounds were played.'
