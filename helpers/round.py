@@ -13,7 +13,7 @@ class Round:
 
     @staticmethod
     def get_now():
-        return datetime.now().isoformat()
+        return datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
 
     def serialize(self):
         return {
