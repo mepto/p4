@@ -185,12 +185,14 @@ class MainController:
     def tournament_matches_report(self):
         """Show matches for a single tournament"""
         tournament_id = self.select_tournament()
-        self._view.report(self._model.get_matches(tournament_id))
+        self._model = Tournament({'id': tournament_id})
+        self._view.report(self._model.get_matches())
 
     def tournament_rounds_reports(self):
         """Show rounds for a single tournament"""
         tournament_id = self.select_tournament()
-        self._view.report(self._model.get_rounds(tournament_id))
+        self._model = Tournament({'id': tournament_id})
+        self._view.report(self._model.get_rounds())
 
     # Full reports
     def players_report(self, sort_order='alpha'):

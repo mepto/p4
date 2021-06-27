@@ -55,7 +55,17 @@ class Tournament:
         Player(player).create()
 
     def get_tournaments(self) -> list:
-        return self._db.read('tournament')
+        results = []
+        tournaments = self._db.read('tournament')
+        for tournament in tournaments:
+            current = {}
+            current['id'] = tournament['id']
+            current['name'] = tournament['name']
+            current['location'] = tournament['location']
+            current['date'] = tournament['date']
+            current['description'] = tournament['description']
+            results.append(current)
+        return results
 
     def get_tournament(self, tournament_id) -> list:
         return self._db.read('tournament', **{'id': tournament_id})
@@ -68,7 +78,7 @@ class Tournament:
                     all_players.remove(player)
         if order == 'alpha':
             all_players.sort(key=lambda item: item.get('last_name').upper())
-        elif order == 'ranking':
+        else:
             all_players.sort(key=lambda item: item.get('ranking'))
         return all_players
 
