@@ -158,8 +158,12 @@ class MainController:
             # Check if round matches scores are full
             if self._model.is_round_over():
                 self._model.set_round_end()
-                self._model.create_new_round()
-                self._model.show_latest_pairs()
+                if len(self._model.rounds) < len(self._model.players) / 2:
+                    self._model.create_new_round()
+                    self._model.show_latest_pairs()
+                else:
+                    self._view.rounds_done()
+                    is_entering_score = False
             else:
                 # Ask for new entry
                 new_entry = int(self._view.get_user_choice(config.ADD_ANOTHER, [0, 1]))
