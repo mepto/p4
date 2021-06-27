@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 class Match:
     def __init__(self, player_1: int, player_2: int, score_p1=None,
                  score_p2=None):

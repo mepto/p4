@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from tabulate import tabulate
 
 import config

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from controller.main_controller import MainController
 from view.main_view import MainView
 
