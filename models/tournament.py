@@ -21,8 +21,7 @@ class Tournament:
             self.time_control = existing_tournament['time_control'] or 'bullet'
             self.description = existing_tournament['description'] or None
             self.name = existing_tournament['name'] or None
-            self.location = existing_tournament['location'] or tournament[
-                'location']
+            self.location = existing_tournament['location'] or tournament['location']
             self.date = existing_tournament['date'] or tournament['date']
         else:
             self.id = None
@@ -45,8 +44,8 @@ class Tournament:
             data[key] = value
         if 'time_control' not in data or not data['time_control']:
             data['time_control'] = self.time_control
-        self.rounds = Round(1,
-                            self.generate_pairs()).serialize()
+        self.players = data['players']
+        self.rounds = Round(1, self.generate_pairs()).serialize()
         data['rounds'] = self.rounds
         self._db.create('tournament', data)
         return {'id': new_id}
@@ -76,14 +75,12 @@ class Tournament:
     def get_matches(self, last_round: bool = False) -> list:
         no_results = [{'matches': 'Nothing to report'}]
         if self.id:
-            tournament_data = self._db.read('tournament',
-                                            **{'id': self.id})[0][0]
+            tournament_data = self._db.read('tournament', **{'id': self.id})[0][0]
             rounds = tournament_data['rounds']
             matches = []
             results = []
             if last_round:
-                current_round = next(
-                    reversed(rounds.keys()))
+                current_round = next(reversed(rounds.keys()))
                 matches = rounds[current_round]['matches']
             else:
                 for item in rounds:
@@ -172,10 +169,8 @@ class Tournament:
         latest_round = list(self.rounds.keys())[-1]
         for item in self.rounds[latest_round]['matches']:
             pairs.append({
-                'player_1': Player(
-                    {'id': item[0][0]}).get_player_name(),
-                'player_2': Player(
-                    {'id': item[1][0]}).get_player_name()
+                'player_1': Player({'id': item[0][0]}).get_player_name(),
+                'player_2': Player({'id': item[1][0]}).get_player_name()
             })
         return pairs
 
@@ -231,13 +226,9 @@ class Tournament:
                         scoreboard[player_id] = {
                             'score': player_score}
                     else:
-                        scoreboard[player_id]['score'] = (
-                            scoreboard[player_id]['score'] + player_score
-                        )
+                        scoreboard[player_id]['score'] = (scoreboard[player_id]['score'] + player_score)
 
-        ordered_players = sorted(scoreboard,
-                                 key=lambda item: (scoreboard[item]['score']),
-                                 reverse=True)
+        ordered_players = sorted(scoreboard, key=lambda item: (scoreboard[item]['score']), reverse=True)
         sorted_scoreboard = {}
         for item in ordered_players:
             sorted_scoreboard[item] = scoreboard[item]
@@ -249,10 +240,8 @@ class Tournament:
             for match in all_matches:
                 if player in match:
                     player_index = match.index(player)
-                    opponent = match[player_index + 1] if player_index == 0 \
-                        else match[player_index - 1]
-                    opponent_index = scoreboard[player]['playables'].index(
-                        opponent)
+                    opponent = match[player_index + 1] if player_index == 0 else match[player_index - 1]
+                    opponent_index = scoreboard[player]['playables'].index(opponent)
                     scoreboard[player]['playables'].pop(opponent_index)
 
         return sorted_scoreboard

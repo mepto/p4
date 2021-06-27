@@ -1,5 +1,5 @@
 [flake8]
-max-line-length = 80
+max-line-length = 119
 select = B,C,E,F,W,T4,B9
 # Ignore 1 blank line before docstring
 ignore = D203
@@ -8,6 +8,6 @@ exclude =
     .git,
     # No checking cache directories
     __pycache__,
-    # NO checking venv
+    # No checking venv
     venv,
 max-complexity = 10

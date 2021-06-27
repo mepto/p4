@@ -36,8 +36,7 @@ class MainView:
         :return: user choice
         """
         user_choice = input(message)
-        while not user_choice or not user_choice.isdigit() or \
-                int(user_choice) not in choice_list:
+        while not user_choice or not user_choice.isdigit() or int(user_choice) not in choice_list:
             reason = None
             if len(user_choice) == 0:
                 reason = 'Empty entry.'

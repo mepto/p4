@@ -22,8 +22,7 @@ class Database:
             file = open(db_file_name, 'w+')
             file.close()
 
-        return TinyDB(db_file_name, sort_keys=True, indent=4,
-                      separators=(',', ': '))
+        return TinyDB(db_file_name, sort_keys=True, indent=4, separators=(',', ': '))
 
     def create(self, table: str, item: dict):
         table_to_update = self.get_table(table)
@@ -52,8 +51,7 @@ class Database:
         current_table = self.get_table(table)
         q = Query()
         try:
-            max_id = max(
-                [res.get('id') for res in current_table.search(q.id.exists())])
+            max_id = max([res.get('id') for res in current_table.search(q.id.exists())])
             new_id = max_id + 1
         except (JSONDecodeError, ValueError):
             new_id = 1
