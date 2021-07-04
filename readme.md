@@ -38,3 +38,13 @@ Chess tournament tool is an offline tool that lets users follow and update a che
 ### Navigation
 Use numbers as indicated in the menu(s) displayed in the application to 
 navigate and create items, update items or print reports.
+
+## Generate flake8 report
+
+pre-commit and its hooks made sure flake8 errors were caught before each 
+commit was made. A report certifying the flake8 compliance can be generated 
+from the terminal. 
+In the terminal, launch the flake8 command and specify the format (html) as 
+well as the name of the directory to create and/or in which to store the report.
+
+`flake8 --format=html --htmldir=_flake-report`
