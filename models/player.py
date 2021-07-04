@@ -16,6 +16,11 @@ class Player:
     def create(self):
         self._db.create('player', self.serialize())
 
+    def update(self, new_data: dict):
+        doc = self._db.read('player', **{'id': new_data['id']})[0][0]
+        doc_id = doc.doc_id
+        self._db.update('player', item_id=doc_id, **new_data)
+
     def serialize(self):
         return {
             'id': self.id,
@@ -28,14 +33,14 @@ class Player:
 
     def get_rank(self, p_id):
         item = self.get_item(p_id)
-        return item[0][0]['id'], item[0][0]['ranking']
+        return item['id'], item['ranking']
 
     def get_players(self):
         return self._db.read('player')
 
     def get_player_name(self):
-        item = self.get_item(self.id)[0]
-        return f"{item[0]['last_name'].upper()} {item[0]['first_name'].capitalize()}"
+        item = self.get_item(self.id)
+        return f"{item['last_name'].upper()} {item['first_name'].capitalize()}"
 
     def get_item(self, p_id):
-        return self._db.read(table='player', **{'id': p_id})
+        return self._db.read(table='player', **{'id': p_id})[0][0]

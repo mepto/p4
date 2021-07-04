@@ -88,7 +88,8 @@ class MainController:
             self.player_menu()
         elif choice == 3:
             # player edition
-            ...
+            self.edit_player()
+            self.player_menu()
 
     def report_menu_choice(self, choice):
         if choice == 0:
@@ -133,6 +134,29 @@ class MainController:
             player['ranking'] = 9999
         self._model = Tournament({})
         self._model.create_player(player)
+        self._view.confirm('player')
+
+    def edit_player(self):
+        self._model = Tournament({})
+        all_players = self._model.get_players()
+        self._view.show_items(all_players)
+        ids = [item['id'] for item in all_players]
+        player = self._view.get_user_choice(config.SELECT_PLAYER, ids)
+        player_data = self._model.get_player(player)
+        new_player_data = {}
+        for item in config.NEW_PLAYER:
+            if item == 'ranking':
+                new_data = int(self._view.get_user_input(
+                    f'{config.NEW_PLAYER[item]} (current data: {player_data[item]}, press enter to keep as is)'))
+            else:
+                new_data = self._view.get_user_input(f'{config.NEW_PLAYER[item]} (current data: {player_data[item]}, '
+                                                     f'press enter to keep as is)')
+            if new_data:
+                new_player_data[item] = new_data
+            else:
+                new_player_data[item] = player_data[item]
+        new_player_data['id'] = player_data['id']
+        self._model.edit_player(new_player_data)
         self._view.confirm('player')
 
     def set_match_results(self):

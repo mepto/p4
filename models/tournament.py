@@ -54,6 +54,10 @@ class Tournament:
     def create_player(player: dict):
         Player(player).create()
 
+    @staticmethod
+    def edit_player(player_data: dict):
+        Player().update(player_data)
+
     def get_tournaments(self) -> list:
         results = []
         tournaments = self._db.read('tournament')
@@ -81,6 +85,9 @@ class Tournament:
         else:
             all_players.sort(key=lambda item: item.get('ranking'))
         return all_players
+
+    def get_player(self, p_id):
+        return Player().get_item(p_id)
 
     def get_matches(self, last_round: bool = False) -> list:
         no_results = [{'matches': 'Nothing to report'}]
@@ -117,13 +124,12 @@ class Tournament:
         if self.id:
             data = []
             db_data = self._db.read('tournament', **{'id': self.id})
-            tournament = Tournament(db_data[0])
-            rounds = tournament.rounds
+            rounds = db_data[0][0]['rounds']
             for round in rounds:
                 current_round = {}
-                current_round['name'] = round
-                for item in rounds[round]:
-                    current_round[item] = rounds[round][item]
+                current_round['round'] = round
+                current_round['start time'] = rounds[round]['start_time']
+                current_round['end time'] = rounds[round]['end_time']
                 data.append(current_round)
             return data if data else no_result
         return no_result
@@ -154,7 +160,7 @@ class Tournament:
         doc = self._db.read('tournament', **{'id': self.id})[0][0]
         doc_id = doc.doc_id
         last_round = f"Round {len(doc['rounds'])}"
-        doc['rounds'][last_round]['end_time'] = datetime.now().isoformat()
+        doc['rounds'][last_round]['end_time'] = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
         self._db.update('tournament', item_id=doc_id, **doc)
 
     def create_new_round(self):
