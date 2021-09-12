@@ -208,7 +208,7 @@ class Tournament:
         initial_scoreboard = self.create_scoreboard()
         scoreboard = initial_scoreboard.copy()
         match_nb = 1
-        while match_nb <= (len(self.players) / 2):
+        while match_nb < (len(self.players) / 2):
             current_player = next(iter(scoreboard.items()))
             current_opponent = current_player[1]['playables'][0]
             match = Match(current_player[0], current_opponent)
@@ -216,15 +216,19 @@ class Tournament:
             for item in scoreboard:
                 try:
                     scoreboard[item]['playables'].remove(current_opponent)
-                except ValueError:
+                except (ValueError, IndexError):
                     pass
                 try:
                     scoreboard[item]['playables'].remove(current_player[0])
-                except ValueError:
+                except (ValueError, IndexError):
                     pass
             scoreboard.pop(current_player[0])
             scoreboard.pop(current_opponent)
             match_nb += 1
+        else:
+            current_player, opponent = scoreboard.keys()
+            match = Match(current_player, opponent)
+            match_list.append(match.serialize())
 
         return match_list
 
@@ -248,17 +252,23 @@ class Tournament:
         for item in ordered_players:
             sorted_scoreboard[item] = scoreboard[item]
 
+        return self.clean_scoreboard(scoreboard, sorted_scoreboard, ordered_players.copy(), all_matches)
+
+    @staticmethod
+    def clean_scoreboard(scoreboard, sorted_scoreboard, ordered_players, all_matches):
         for player in sorted_scoreboard:
-            sorted_scoreboard[player]['playables'] = ordered_players.copy()
+            sorted_scoreboard[player]['playables'] = ordered_players
             player_index = scoreboard[player]['playables'].index(player)
             sorted_scoreboard[player]['playables'].pop(player_index)
             for match in all_matches:
                 if player in match:
                     player_index = match.index(player)
                     opponent = match[player_index + 1] if player_index == 0 else match[player_index - 1]
-                    opponent_index = scoreboard[player]['playables'].index(opponent)
-                    scoreboard[player]['playables'].pop(opponent_index)
-
+                    try:
+                        opponent_index = scoreboard[player]['playables'].index(opponent)
+                        scoreboard[player]['playables'].pop(opponent_index)
+                    except ValueError:
+                        pass
         return sorted_scoreboard
 
     @staticmethod
