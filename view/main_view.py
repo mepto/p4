@@ -22,10 +22,6 @@ class MainView:
         print(config.PLAYER_MENU)
 
     @staticmethod
-    def report_menu():
-        print(config.REPORT_MENU)
-
-    @staticmethod
     def exit():
         print(config.EXIT)
 
