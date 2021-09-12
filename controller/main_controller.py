@@ -12,23 +12,51 @@ class MainController:
         """ Controller initializer """
         self._view = view
         self._model = model
+
+        self.MAIN_MENU = {
+            0: self.exit_application,
+            1: self.tournament_menu,
+            3: self.player_menu,
+        }
+
+        self.TOURNAMENT_MENU = {
+            0: self.exit_application,
+            1: self.main_menu,
+            2: self.add_tournament,
+            3: self.set_match_results,
+            4: self.tournament_players_report_alpha,
+            5: self.tournament_players_report_ranking,
+            6: self.tournament_matches_report,
+            7: self.tournament_rounds_reports,
+            8: self.tournament_report
+        }
+
+        self.PLAYER_MENU = {
+            0: self.exit_application,
+            1: self.main_menu,
+            2: self.add_player,
+            3: self.edit_player,
+            4: self.players_report_alpha,
+            5: self.players_report_ranking
+        }
+
         self._view.welcome()
         self.main_menu()
 
     def main_menu(self):
         self._view.main_menu()
         main_choice = self._view.get_user_choice(config.DEFAULT_MSG, [*range(0, 4)])
-        self.main_menu_choice(main_choice)
+        self.MAIN_MENU.get(main_choice)()
 
     def tournament_menu(self):
         self._view.tournament_menu()
         tournament_choice = self._view.get_user_choice(config.DEFAULT_MSG, [*range(0, 8)])
-        self.tournament_menu_choice(tournament_choice)
+        self.TOURNAMENT_MENU.get(tournament_choice)()
 
     def player_menu(self):
         self._view.player_menu()
         player_choice = self._view.get_user_choice(config.DEFAULT_MSG, [*range(0, 4)])
-        self.player_menu_choice(player_choice)
+        self.PLAYER_MENU.get(player_choice)()
 
     def report_menu(self):
         self._view.report_menu()
@@ -36,79 +64,85 @@ class MainController:
         self.report_menu_choice(report_choice)
 
     def main_menu_choice(self, choice):
-        if choice == 0:
-            self._view.exit()
-            sys.exit()
-        elif choice == 1:
-            self.tournament_menu()
-        elif choice == 2:
-            self.player_menu()
-        elif choice == 3:
-            self.report_menu()
+        ...
+
+    #     if choice == 0:
+    #         self.exit_application()
+    #     elif choice == 1:
+    #         self.tournament_menu()
+    #     elif choice == 2:
+    #         self.player_menu()
+    #     elif choice == 3:
+    #         self.report_menu()
+
+    def exit_application(self):
+        self._view.exit()
+        sys.exit()
 
     def tournament_menu_choice(self, choice):
-        if choice == 0:
-            self._view.exit()
-            sys.exit()
-        elif choice == 1:
-            self.main_menu()
-        elif choice == 2:
-            # tournament creation
-            self.add_tournament()
-            self.tournament_menu()
-        elif choice == 3:
-            self.set_match_results()
-            self.tournament_menu()
-        elif choice == 4:
-            # List tournament players (alpha)
-            self.tournament_players_report(sort_order='alpha')
-            self.tournament_menu()
-        elif choice == 5:
-            # List tournament players (ranking)
-            self.tournament_players_report(sort_order='ranking')
-            self.tournament_menu()
-        elif choice == 6:
-            # List tournament matches
-            self.tournament_matches_report()
-            self.tournament_menu()
-        elif choice == 7:
-            # List tournament rounds
-            self.tournament_rounds_reports()
-            self.tournament_menu()
+        ...
+        # if choice == 0:
+        #     self.exit_application()
+        # elif choice == 1:
+        #     self.main_menu()
+        # elif choice == 2:
+        #     # tournament creation
+        #     self.add_tournament()
+        #     self.tournament_menu()
+        # elif choice == 3:
+        #     self.set_match_results()
+        #     self.tournament_menu()
+        # elif choice == 4:
+        #     # List tournament players (alpha)
+        #     self.tournament_players_report(sort_order='alpha')
+        #     self.tournament_menu()
+        # elif choice == 5:
+        #     # List tournament players (ranking)
+        #     self.tournament_players_report(sort_order='ranking')
+        #     self.tournament_menu()
+        # elif choice == 6:
+        #     # List tournament matches
+        #     self.tournament_matches_report()
+        #     self.tournament_menu()
+        # elif choice == 7:
+        #     # List tournament rounds
+        #     self.tournament_rounds_reports()
+        #     self.tournament_menu()
 
     def player_menu_choice(self, choice):
-        if choice == 0:
-            self._view.exit()
-            sys.exit()
-        elif choice == 1:
-            self.main_menu()
-        elif choice == 2:
-            # player creation
-            self.add_player()
-            self.player_menu()
-        elif choice == 3:
-            # player edition
-            self.edit_player()
-            self.player_menu()
+        ...
+        # if choice == 0:
+        #     self.exit_application()
+        # elif choice == 1:
+        #     self.main_menu()
+        # elif choice == 2:
+        #     # player creation
+        #     self.add_player()
+        #     self.player_menu()
+        # elif choice == 3:
+        #     # player edition
+        #     self.edit_player()
+        #     self.player_menu()
 
     def report_menu_choice(self, choice):
-        if choice == 0:
-            self._view.exit()
-            sys.exit()
-        elif choice == 1:
-            self.main_menu()
-        elif choice == 2:
-            # tournament print report
-            self.tournament_report()
-            self.report_menu()
-        elif choice == 3:
-            # player print report - alpha
-            self.players_report()
-            self.report_menu()
-        elif choice == 4:
-            # player print report - ranking
-            self.players_report(sort_order='ranking')
-            self.report_menu()
+        ...
+        # if choice == 0:
+        #     self._view.exit()
+        #     sys.exit()
+        # elif choice == 1:
+        #     self.main_menu()
+        # elif choice == 2:
+        #     tournament print report
+        # self.tournament_report()
+        # self.report_menu()
+        # elif choice == 3:
+        # player print report - alpha
+        # self.players_report()
+        # self.report_menu()
+        # elif choice == 4:
+        # player print report - ranking
+        # self.players_report(sort_order='ranking')
+        # self.report_menu()
 
     def add_tournament(self):
         data = {}
@@ -125,6 +159,7 @@ class MainController:
         self._view.confirm('tournament')
         self._view.show_items(self._model.show_latest_pairs())
         self._view.confirm('pairs')
+        self.tournament_menu()
 
     def add_player(self):
         player = {}
@@ -135,6 +170,8 @@ class MainController:
         self._model = Tournament({})
         self._model.create_player(player)
         self._view.confirm('player')
+
+        self.player_menu()
 
     def edit_player(self):
         self._model = Tournament({})
@@ -158,6 +195,8 @@ class MainController:
         new_player_data['id'] = player_data['id']
         self._model.edit_player(new_player_data)
         self._view.confirm('player')
+
+        self.player_menu()
 
     def set_match_results(self):
         # Get user to select tournament and match
@@ -193,12 +232,22 @@ class MainController:
                 new_entry = int(self._view.get_user_choice(config.ADD_ANOTHER, [0, 1]))
                 if not new_entry:
                     is_entering_score = False
+        self.tournament_menu()
 
     # Tournament reports
+
+    def tournament_players_report_alpha(self):
+        self.tournament_players_report()
+
+    def tournament_players_report_ranking(self):
+        self.tournament_players_report('ranking')
+
     def tournament_players_report(self, sort_order='alpha'):
         """Show players for a single tournament"""
         self._model = Tournament({'id': self.select_tournament()})
         self.players_report(sort_order)
+
+        self.tournament_menu()
 
     def select_tournament(self) -> int:
         # lists all tournaments and returns the selected id
@@ -212,13 +261,23 @@ class MainController:
         self._model = Tournament({'id': tournament_id})
         self._view.report(self._model.get_matches())
 
+        self.tournament_menu()
+
     def tournament_rounds_reports(self):
         """Show rounds for a single tournament"""
         tournament_id = self.select_tournament()
         self._model = Tournament({'id': tournament_id})
         self._view.report(self._model.get_rounds())
 
+        self.tournament_menu()
+
     # Full reports
+    def players_report_alpha(self):
+        self.players_report()
+
+    def players_report_ranking(self):
+        self.players_report('ranking')
+
     def players_report(self, sort_order='alpha'):
         """Show all players in DB"""
         self._view.report(self._model.get_players(sort_order))
