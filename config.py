@@ -1,4 +1,4 @@
-DEFAULT_MSG = 'Please make your selection: '
+DEFAULT_MSG = 'Please make your selection '
 NEW_TOURNAMENT = {'name': 'Enter tournament name',
                   'location': 'Enter tournament location',
                   'date': 'Enter tournament date (dd/mm/yyyy)',
@@ -27,7 +27,6 @@ MAIN_MENU = '''
 ---------------------
 1 - Tournament management
 2 - Player management
-3 - Global reports
 '''
 TOURNAMENT_MENU = '''
 ------------- TOURNAMENT MENU --------------
@@ -40,6 +39,7 @@ TOURNAMENT_MENU = '''
 5 - List tournament players (ranking)
 6 - List tournament matches
 7 - List tournament rounds
+8 - All tournaments report
 '''
 PLAYER_MENU = '''
 --------------- PLAYER MENU ----------------
@@ -48,15 +48,8 @@ PLAYER_MENU = '''
 ---------------------
 2 - Create player
 3 - Edit player
-'''
-REPORT_MENU = '''
---------------- REPORT MENU ----------------
-0 - Exit
-1 - Back
----------------------
-2 - All tournaments report
-3 - All players report (alpha)
-4 - All players report (ranking)
+4 - All players report (alpha)
+5 - All players report (ranking)
 '''
 REPORT_END = '--------------- END OF REPORT ---------------'
 EXIT = "--------------- SEE YOU SOON ----------------"
