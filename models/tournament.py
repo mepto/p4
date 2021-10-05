@@ -1,3 +1,4 @@
+import copy
 from datetime import datetime
 
 from helpers.database import Database
@@ -251,24 +252,22 @@ class Tournament:
         sorted_scoreboard = {}
         for item in ordered_players:
             sorted_scoreboard[item] = scoreboard[item]
-
-        return self.clean_scoreboard(scoreboard, sorted_scoreboard, ordered_players.copy(), all_matches)
+        print(sorted_scoreboard)
+        return self.clean_scoreboard(sorted_scoreboard, ordered_players.copy(), all_matches)
 
     @staticmethod
-    def clean_scoreboard(scoreboard, sorted_scoreboard, ordered_players, all_matches):
+    def clean_scoreboard(sorted_scoreboard, ordered_players, all_matches):
+        # Add playables and remove already played
         for player in sorted_scoreboard:
-            sorted_scoreboard[player]['playables'] = ordered_players
-            player_index = scoreboard[player]['playables'].index(player)
+            sorted_scoreboard[player]['playables'] = copy.deepcopy(ordered_players)
+            player_index = sorted_scoreboard[player]['playables'].index(player)
             sorted_scoreboard[player]['playables'].pop(player_index)
             for match in all_matches:
                 if player in match:
-                    player_index = match.index(player)
-                    opponent = match[player_index + 1] if player_index == 0 else match[player_index - 1]
-                    try:
-                        opponent_index = scoreboard[player]['playables'].index(opponent)
-                        scoreboard[player]['playables'].pop(opponent_index)
-                    except ValueError:
-                        pass
+                    match_player_index = match.index(player)
+                    opponent = match[1] if match_player_index == 0 else match[0]
+                    opponent_index = sorted_scoreboard[player]['playables'].index(opponent)
+                    sorted_scoreboard[player]['playables'].pop(opponent_index)
         return sorted_scoreboard
 
     @staticmethod
