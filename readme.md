@@ -8,7 +8,7 @@ Chess tournament tool is an offline tool that lets users follow and update a che
 
 `git clone https://github.com/mepto/p4.git`
 
-2. Make sure you use python 3.8.5. Check your python version:
+2. Make sure you use python 3.10. Check your python version:
 
 `python --version`
 
