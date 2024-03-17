@@ -163,8 +163,7 @@ class MainController:
     def tournament_players_report(self, sort_order='alpha'):
         """Show players for a single tournament"""
         self._model = Tournament({'id': self.select_tournament()})
-        self.players_report(sort_order)
-
+        self._view.report(self._model.get_players(sort_order))
         self.tournament_menu()
 
     def select_tournament(self) -> int:
@@ -200,6 +199,7 @@ class MainController:
 
     def players_report(self, sort_order='alpha'):
         """Show all players in DB"""
+        self._model = Tournament({})
         self._view.report(self._model.get_players(sort_order))
 
     def tournament_report(self, needs_selection=False):

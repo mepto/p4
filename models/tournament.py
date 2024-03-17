@@ -76,11 +76,14 @@ class Tournament:
         return self._db.read('tournament', **{'id': tournament_id})
 
     def get_players(self, order: str = None) -> list:
-        all_players = Player().get_players()  # list of dicts
+        all_players = Player().get_players().copy()  # list of dicts
+        final_players = []
         if self.id:
             for player in all_players:
-                if player['id'] not in self.players:
-                    all_players.remove(player)
+                if player['id'] in self.players:
+                    final_players.append(player)
+        if len(final_players):
+            all_players = final_players
         if order == 'alpha':
             all_players.sort(key=lambda item: item.get('last_name').upper())
         else:
